@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+    <!-- <link rel="stylesheet" href="css/all.css"> -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <script>
+    function load_docs(){
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+       let table = document.getElementById('doc_table');
+       let str = '';    
+      let docs = JSON.parse(this.responseText).docs;
+        docs.forEach((doc)=>{
+            str += ` <tr>
+            <td>` +doc.title+` </td>
+            <td>` +new Date(parseInt(doc.date))+`</td>
+            <td><a href="` +doc.path+`" download><button type="button" class="btn btn-info">Download</button></a></td>
+          </tr>`
+        });
+        table.innerHTML = str;
+      }
+    };
+    xhttp.open("GET", "/shop/docs", true);
+    xhttp.send();
+}
+load_docs();
+function search(e){
+    var input, filter, found, table, tr, td, i, j;
+    input = document.getElementById(e+"_q");
+    filter = input.value.toUpperCase();
+    table = document.getElementById(e+"_table");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                found = true;
+            }
+        }
+        if (found) {
+            tr[i].style.display = "";
+            found = false;
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
+}
+function load_bills(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+       let table = document.getElementById('bill_table');
+       let str = '';    
+      let bills = JSON.parse(this.responseText).bills;
+      bills.forEach((bill)=>{
+            str += ` <tr>
+            <td>` +bill.title+` </td>
+            <td>` +new Date(parseInt(bill.date))+`</td>
+            <td><a href="` +bill.path+`" download><button type="button" class="btn btn-info">Download</button></a></td>
+          </tr>`
+        });
+        table.innerHTML = str;
+      }
+    };
+    xhttp.open("GET", "/shop/bills", true);
+    xhttp.send();
+}
+load_bills();
+    function pwd_change(){
+    console.log("pwd");
+    let pwd_old= document.getElementById("old_pwd").value;
+    let pwd_new= document.getElementById("pwd").value;
+
+   var xhttp = new XMLHttpRequest();
+   xhttp.onreadystatechange = function() {
+     if (this.readyState == 4 && this.status == 200) {
+         let success = JSON.parse(this.responseText).success;
+        alert(success);
+     }
+   };
+   xhttp.open("POST", "/shop/settings", true);
+   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+   xhttp.send("pwd_old="+pwd_old+"&pwd_new="+pwd_new);
+ 
+}
+    function navigate(loc){
+        document.getElementById('settings_div').style.display='none';
+        document.getElementById('notifications_div').style.display='none';
+
+        document.getElementById('utility_div').style.display='none';
+        document.getElementById('docs_div').style.display='none';
+        document.getElementById('employees_div').style.display='none';
+        document.getElementById('add_employees_div').style.display='none';
+        document.getElementById('security_form_div').style.display='none';
+
+        document.getElementById(loc).style.display='block';
+
+    }
+    function read(id){
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+          let success = JSON.parse(this.responseText).success;
+         //alert(success);
+      }
+    };
+    xhttp.open("GET", "/notifications/read/"+id, true);
+    xhttp.send(); 
+}
+    </script>
+    </head>
+
+<body>
+    <div class="nav-side-menu">
+        <div class="brand brand-color"><h4>Falcon Mart</h4>
+        <span style='font-size:18px'>SHOP PANEL : <span style='display:inline;font-size:14px'><%= shop.name %></span></span></div>
+        <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+        <div class="menu-list">
+            <ul id="menu-content" class="menu-content collapse out">
+                <li onClick="navigate('employees_div')">
+                    <a >
+                        <i class="fas fa-users"></i> Employees
+                    </a>
+                </li>
+                <li onClick="navigate('add_employees_div')">
+                    <a >
+                        <i class="fas fa-user-tie"></i> Add Employees 
+                    </a>
+                </li>
+                <li  onClick="navigate('notifications_div')">
+                <a>
+                    <i class="fa fa-users fa-lg"></i> Notices/Messages <% let count = 0; for(let i=0;i<notifications.length;i++){  if( notifications[i].flag==="unread"){ count++ ;     }}  ;  if(count>0){ %>
+                 <span class="badge badge-light"><%= count %></span>
+                    <%      } %>
+                </a>
+            </li>
+                <li onClick="navigate('security_form_div')">
+                    <a >
+                        <i class="fas fa-user-secret"></i> Security Form
+                    </a>
+                </li>
+                <li onClick="navigate('utility_div')">
+                    <a >
+                        <i class="fas fa-wrench"></i> Utility Bill
+                    </a>
+                </li>
+                <li onClick="navigate('docs_div')">
+                    <a >
+                        <i class="fas fa-file"></i> Documents
+                    </a>
+                </li>
+                <li onClick="navigate('settings_div')">
+                    <a >
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+                <div class="text-center">
+                    <a href='/logout' class="btn btn-warning">Logout</a>
+                </div>
+            </ul>
+            
+        </div>
+    </div>
+    <div class="container" id="main">
+         <!---       utility_div        ------>  
+         <div class="row" id="utility_div" style="display:none">
+         <div class="col-md-12">
+         <h3>  <i class="fas fa-wrench"></i> Utility Bill
+         </h3>
+         <hr>
+         
+   
+         <form action='/shop/bills' method="POST" enctype='multipart/form-data'>
+
+         <div class="form-group ">
+           <label for="title">Title:</label>
+           <input type="text" class="form-control"  placeholder="Enter Title/Little Description" name="title">
+         </div>
+         <div class="form-group">
+           <label for="file">file:</label>
+           <input type="file" class="form-control-file" name="bill">
+         </div>
+         
+         
+         <br>
+        
+         <button  class="btn btn-primary" >Upload</button>
+       </form>
+       <hr>
+
+   <h4>Utility Bills uploaded by your shop</h4>
+   <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Search By Title,date</span>
+    </div>
+    <input type="text" class="form-control" placeholder="Title,Date?" id='bill_q' onkeyup="search('bill')">
+  </div>
+   <table class="table table-dark table-hover" >
+    <thead >
+      <tr>
+        <th>Title</th>
+        <th>Upload Date</th>
+        <th>Download</th>
+
+      </tr>
+    </thead>
+    <tbody id='bill_table'>
+    
+    
+     
+     
+    </tbody>
+  </table>
+
+         </div>
+     </div>
+    
+    <!----      utility_div        -----------> 
+     <!---       docs_div        ------>  
+     <div class="row" id="docs_div" style="display:none">
+     <div class="col-md-12">
+     <h3>  <i class="fas fa-file"></i> Documents
+     </h3>
+     <hr>
+     <form action='/shop/docs' method="POST" enctype='multipart/form-data'>
+
+     <div class="form-group ">
+       <label for="title">Title:</label>
+       <input type="text" class="form-control"  placeholder="Enter Title/Little Description" name="title">
+     </div>
+     <div class="form-group">
+       <label for="file">file:</label>
+       <input type="file" class="form-control-file" name="doc">
+     </div>
+     
+     
+     <br>
+    
+     <button  class="btn btn-primary" >Upload</button>
+   </form> 
+   <hr>
+
+   <h4>Documents uploaded by your shop</h4>
+   <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Search By Title,date</span>
+    </div>
+    <input type="text" class="form-control" placeholder="Title,Date?" id='doc_q' onkeyup="search('doc')">
+  </div>
+   <table class="table table-dark table-hover" >
+    <thead >
+      <tr>
+        <th>Title</th>
+        <th>Upload Date</th>
+        <th>Download</th>
+
+      </tr>
+    </thead>
+    <tbody id='doc_table'>
+    
+    
+     
+     
+    </tbody>
+  </table>
+   </div>
+ </div>
+
+<!----      docs_div        -----------> 
+ <!---       employees_div        ------>  
+ <div class="row" id="employees_div" >
+ <div class="col-md-12">
+ <h3>  <i class="fas fa-users"></i> Employees
+ </h3>
+ <% let employees = JSON.parse(shop.employee_list) %>
+ <hr>
+ <% employees.forEach((employee)=>{ %>
+ <div class="container-fluid">
+ <div class="container addemployee-body">
+     <div class="container ">
+         <div class="row card-info-section">
+             <div class="col-sm-8">
+                 <div class="row person-data">
+                     <div class="col-4">
+                         <p>ID</p>
+                     </div>
+                     <div class="col-8">
+
+                     </div>
+                 </div>
+
+                 <div class="row person-data">
+                     <div class="col-4">
+                         <p>Name</p>
+                     </div>
+                     <div class="col-8">
+                     <%= employee.name %>
+
+                     </div>
+                 </div>
+
+                 <div class="row person-data">
+                     <div class="col-4">
+                         <p>Father Name</p>
+                     </div>
+                     <div class="col-8">
+                     <%= employee.father_name %>
+
+                     </div>
+                 </div>
+
+                 <div class="row person-data">
+                     <div class="col-4">
+                         <p>Cnic No.</p>
+                     </div>
+                     <div class="col-8">
+                     <%= employee.cnic %>
+                     </div>
+                 </div>
+             </div>
+
+             <div class="col-sm-4 photo">
+                     <img src="<%= employee.pic %>" alt="" class="rounded image-wrapper">
+             </div>
+         </div>
+     </div>
+ </div>
+</div>
+<% }) %>
+  </div>
+</div>
+
+<!----      employees_div        -----------> 
+ <!---       add_employees_div        ------>  
+ <div class="row" id="add_employees_div" style="display:none">
+ <div class="col-md-12">
+ <h3>  <i class="fas fa-user-tie"></i> Add Employees
+ </h3>
+ <hr>
+ <form action="/shop/add_employee" method="POST" enctype="multipart/form-data">
+
+ <div class="form-group ">
+   <label for="name">Name:</label>
+   <input type="text" class="form-control"  placeholder="Enter Full Name" name="name">
+ </div>
+ <div class="form-group ">
+   <label for="name">father Name:</label>
+   <input type="text" class="form-control"  placeholder="Enter Father Name" name="father_name">
+ </div>
+ <div class="form-group ">
+   <label for="name">Address:</label>
+   <input type="text" class="form-control"  placeholder="Enter Address" name="address">
+ </div>
+ <div class="form-group ">
+   <label for="name">Phone Number:</label>
+   <input type="text" class="form-control"  placeholder="Enter Phone number" name="phone">
+ </div>
+ <div class="form-group ">
+   <label for="name">CNIC:</label>
+   <input type="text" class="form-control"  placeholder="Enter CNIC number" name="cnic">
+ </div>
+ <div class="form-group">
+   <label for="file">Picture:</label>
+   <input type="file" class="form-control-file" name="pic">
+ </div>
+ 
+ 
+ <br>
+
+ <button  class="btn btn-primary" >Add</button>
+</form> </div>
+</div>
+
+<!----      add_employees_div        -----------> 
+  <!---       notifications_div        ------>  
+  <div class="row" id="notifications_div" style="display:none">
+  <div class="col-md-12">
+  <h3> <i class="fa fa-users fa-lg"></i> Notices / Messages
+  </h3>
+  <hr>
+  <% notifications.forEach((notification)=>{ if(notification.flag==="unread"){ %>
+  <div class="alert alert-success alert-dismissible" id='<%= notification._id %>'>
+  <button type="button" class="close" data-dismiss="alert" onClick='read(this.parentNode.id)'>&times;</button>
+  <strong><%= notification.title %></strong> <span><% let date=  new Date(parseInt(notification.date)); %> <%= date %></span>
+  <p><%= notification.detail %></p>
+  <p>From: <span><%= notification.from %> </span></p>
+</div>
+ <% }}) %>
+ <hr>
+  <h4>OLD NOTICES / MESSAGES</h4>
+  <% notifications.forEach((notification)=>{ if(notification.flag!=="unread"){ %>
+  <div class="alert alert-secondary alert-dismissible" id='<%= notification._id %>'>
+  <strong><%= notification.title %></strong> <span><% let date=  new Date(parseInt(notification.date)); %> <%= date %></span>
+  <p><%= notification.detail %></p>
+  <p>From: <span><%= notification.from %> </span></p>
+</div>
+ <% }}) %>
+  </div>
+  </div>
+  
+      <!---       notifications_div        ------>  
+
+
+     <!---       settings_div        ------>  
+     <div class="row" id="settings_div" style="display:none">
+     <div class="col-md-12">
+     <h3> <i class="fas fa-cog"></i> Settings
+     </h3>
+     <hr>
+     <div >
+     <div class="form-group ">
+       <label for="email">Old Password:</label>
+       <input type="password" class="form-control"  placeholder="Enter Old Password" id="old_pwd">
+     </div>
+     <div class="form-group">
+       <label for="pwd">New Password:</label>
+       <input type="password" class="form-control"  placeholder="Enter New password" id="pwd">
+     </div>
+     <div class="form-group">
+       <label for="pwd">Confirm Password:</label>
+       <input type="password" class="form-control"  placeholder="Confirm password" id="pwd_2" onChange="check_pwd()">
+     </div>
+     
+     <br><br>
+    
+     <button disabled id='pwd_btn' class="btn btn-primary" onClick="pwd_change()">Change Password</button>
+   </div>
+     </div>
+ </div>
+
+<!----      settings_div        ----------->
+  <!---       security_form_div        ------>  
+  <div class="row" id="security_form_div" style="display:none">
+  <div class="col-md-12">
+  <h3>   <i class="fas fa-user-secret"></i> Security Form
+  </h3>
+  <hr>
+  <form method='POST' action='/shop/security'>
+  <div class="form-group ">
+    <label >Name:</label>
+    <input type="text" class="form-control" name='name'  placeholder="Enter Name" >
+  </div>
+  <div class="form-group">
+    <label >CNIC:</label>
+    <input type="text" class="form-control" name='cnic' placeholder="Enter Shop Owner CNIC" >
+  </div>
+  <div class="form-group">
+    <label>Address:</label>
+    <input type="text" class="form-control" name='address' placeholder="Enter Address"  >
+  </div>
+  
+  <br><br>
+ 
+  <button  class="btn btn-primary" >Submit</button>
+</form>
+  </div>
+</div>
+
+<!----      security_form_div        ----------->
+    </div>
+   
+
+</body>
+    <!-- <script src="js/bootstrap.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/popper.min.js"></script> -->
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</html>

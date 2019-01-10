@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Shop portal</title>
+</head>
+<body>
+    <h1>shop portal</h1> <a href="/logout">Logout</a>
+    <h3>wellcome <%=  shop.username %></h3>
+    <!--  All employees -->
+    <hr><div>
+        <h3>All employees</h3>
+        <table>
+            <% let employee_list = JSON.parse(shop.employee_list); for(let i=0; i < employee_list.length; i++){ %>
+                <tr> <td><%= employee_list[i].name %></td><td><%= employee_list[i].phone %></td><td><img src="<%= employee_list[i].pic %>" width='50px' height='50px' /></td> </tr>
+          <%  } %>
+
+        </table>
+        </div>
+   
+        <!--  Add employees -->
+        <hr>
+    <h3>Add employee</h3>
+    <div>
+            <form action="/shop/add_employee" method="POST" enctype="multipart/form-data">
+                <label>Name</label><input type="text" name="name"><br>
+                <label>Father Name</label><input type="text" name="father_name"><br>
+                <label>Address</label><input type="text" name="address"><br>
+                <label>Phone number</label><input type="text" name="phone"><br>
+                <label>Cnic number</label><input type="text" name="cnic"><br>
+                <label>Picture</label><input type="file" name="pic"><br>
+                <button type="submit">Add</button>
+             </form>
+    </div>
+
+     <!--  Security form -->
+     <hr>
+     <div>
+     <h3>Security Form</h3>
+      <form>
+      <label>Name</label><input type="text" name="name"><br>
+      <label>CNIC</label><input type="text" name="cnic"><br>
+      <label>Address</label><input type="text" name="address"><br>
+
+      <button type="submit">Submit</button>
+      </form>
+     </div>
+     <!--  Settings -->
+     <hr>
+     <div>
+     <h3>Settings</h3>
+      <form action='/shop/settings' method="POST">
+      <label>Old Password</label><input type="password" name="pwd_old" id='pwd_old'><br>
+      <label>New Password</label><input type="password" name="pwd_new" id='pwd'><br>
+      <label>Confirm Password</label><input type="password"  id='pwd_2'><br>
+
+      <button type="submit" onClick="return check()">Submit</button>
+      </form>
+      <script>
+      function check(){
+         
+            if(document.getElementById('pwd').value===document.getElementById('pwd_2').value)
+            {
+              //  alert("success");
+                return true
+            }
+          
+          else{
+             alert("old password is not match"); 
+            return false;
+          }
+         
+          
+      }
+      </script>
+     </div>
+      <!--  Docs -->
+      <hr>
+      <div>
+      <h3>Docs</h3>
+       <form action='/shop/docs' method="POST" enctype='multipart/form-data'>
+       <label>Title</label><input type="text" name="title"><br>
+       <label>file</label><input type="file" name="doc" ><br>
+       
+ 
+       <button type="submit" >Submit</button>
+       </form>
+    </div> 
+     <!--  Bills -->
+     <hr>
+     <div>
+     <h3>Bills</h3>
+      <form action='/shop/bills' method="POST" enctype='multipart/form-data'>
+      <label>Title</label><input type="text" name="title"><br>
+      <label>file</label><input type="file" name="bill" ><br>
+      
+
+      <button type="submit" >Submit</button>
+      </form>
+   </div> 
+    
+   
+</body>
+</html>

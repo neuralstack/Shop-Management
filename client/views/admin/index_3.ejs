@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Admin portal</title>
+</head>
+<body>
+    <h1>Admin portal</h1> <a href="/logout">Logout</a>
+    <h3>wellcome <%=  admin.username %></h3>
+    <!--  All employees -->
+    <hr><div>
+        <h3>All Shops</h3>
+        <table bordered>
+        
+          <% shops.forEach((shop)=>{ %>
+         <tr> <th><%= shop.username %></th><td><%= shop._id %></td><td><%= shop.password %></td><td>
+         <% if( parseInt(shop.approved_flag)===0){ %>
+         <a href="/shop/approve/<%= shop._id %>"><button>Approve</button></a>
+         <% } %>
+         
+         </td></tr>
+        <%  }) %>
+
+        </table>
+        </div>
+   
+      
+
+     <!--  Security form -->
+     <hr>
+     <div>
+     <h3>Security Form</h3>
+     <hr>
+     </div>
+     <!--  Settings -->
+     <hr>
+     <div>
+     <h3>Settings</h3>
+      <form action='/admin/settings' method="POST">
+      <label>Old Password</label><input type="password" name="pwd_old" id='pwd_old'><br>
+      <label>New Password</label><input type="password" name="pwd_new" id='pwd'><br>
+      <label>Confirm Password</label><input type="password"  id='pwd_2'><br>
+
+      <button type="submit" onClick="return check()">Submit</button>
+      </form>
+      <script>
+      function check(){
+         
+            if(document.getElementById('pwd').value===document.getElementById('pwd_2').value)
+            {
+              //  alert("success");
+                return true
+            }
+          
+          else{
+             alert("old password is not match"); 
+            return false;
+          }
+         
+          
+      }
+      </script>
+     </div>
+      <!--  Docs -->
+      <hr>
+      <div>
+      <h3>Docs</h3>
+      <table >
+    
+          <% docs.forEach((doc)=>{ %>
+         <tr> <th><%= doc.shop_id %></th><td><a download href="<%= doc.path %>"><%= doc.title %></a></td></tr>
+        <%  }) %>
+
+        </table>
+    </div> 
+     <!--  Bills -->
+     <hr>
+     <div>
+     <h3>Bills</h3>
+     <table >
+    
+     <% bills.forEach((bill)=>{ %>
+    <tr> <th><%= bill.shop_id %></th><td><a download href="<%= bill.path %>"><%= bill.title %></a></td></tr>
+   <%  }) %>
+
+   </table>
+   </div> 
+    
+   <style>
+   td,tr,th {
+       border:1px solid black
+   }
+   </style>
+</body>
+</html>

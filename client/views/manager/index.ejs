@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+    <!-- <link rel="stylesheet" href="css/all.css"> -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+</head>
+<body>
+    <div class="nav-side-menu">
+        <div class="brand brand-color"><h4>Falcon Mart Panel</h4>
+        
+        <span style='font-size:18px'>Manager: <span style='display:inline;font-size:14px'><%= manager.name %></span></span></div>
+        <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+        <div class="menu-list">
+            <ul id="menu-content" class="menu-content collapse out">
+                <li  onClick="navigate('shop_div')">
+                    <a >
+                   
+                        <i class="fas fa-stroopwafel"></i> Shop
+                    </a>
+                </li>
+                <li onClick="navigate('add_shop_div')">
+                <a >
+               
+                    <i class="fas fa-stroopwafel"></i> Add Shop
+                </a>
+                </li>
+                <li onClick="navigate('security_forms_div')">
+                    <a >
+                        <i class="fa fa-user fa-lg"></i> Security Forms
+                    </a>
+                </li>
+                <li onClick="navigate('notifications_div')">
+                <a >
+                <i class="fa fa-users fa-lg"></i> Notification <% let count = 0; for(let i=0;i<notifications.length;i++){  if( notifications[i].flag==="unread"){ count++ ;     }}  ;  if(count>0){ %>
+             <span class="badge badge-light"><%= count %></span>
+                <%      } %>
+            </a>
+                </li>
+                <li  onClick="navigate('utility_div')">
+                    <a >
+                        <i class="fas fa-wrench"></i> Utilities
+                    </a>
+                </li>
+                <li onClick="navigate('rental_docs_div')">
+                    <a  >
+                        <i class="fas fa-file"></i> Rental Documents
+                    </a>
+                </li>
+                <li>
+                    <a >
+                        <i class="far fa-chart-bar"></i> Reports
+                    </a>
+                </li>
+                <li  onClick="navigate('employees_div')">
+                    <a>
+                        <i class="fas fa-users"></i> Employees
+                    </a>
+                </li>
+                <li  onClick="navigate('add_employees_div')">
+                    <a>
+                        <i class="fas fa-user-tie"></i> Add Employees 
+                    </a>
+                </li>
+                <li onClick="navigate('settings_div')">
+                    <a >
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+            </ul>
+            <div class="text-center">
+                <a href="/logout" class="btn btn-warning">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div class="container" id="main"  >
+    <!---       shop_div        ------>  
+    <div class="row" id="shop_div">
+            <div class="col-md-12">
+            <h3><i class="fas fa-stroopwafel"></i> Shop</h3>
+            <hr>
+            <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Search By Title,Shop Name</span>
+            </div>
+            <input type="text" class="form-control" placeholder="Title,Shop Name?" id='shop_q' onkeyup="search_shop()">
+          </div>
+            <table class="table table-dark table-hover">
+            <thead><tr><th>Shop Name</th><th>Shop Owner</th><th>Shop Email</th><th>Phone Number</th><th>Due/Paid</th></tr></thead>
+            <tbody id='shop_table'>
+            <% shops.forEach((shop)=>{ if( parseInt(shop.approved_flag)!==0){ %>
+           <tr  id='<%= shop._id %>'> <th><button onClick="get_shop(this.parentNode.parentNode.id)"><%= shop.name %></button></th><td><%= shop.owner_name %></td><td><%= shop.email %></td><td><%= shop.phone %></td>
+           <td>
+           <% let date= new Date().getTime(); if((shop.last_paid+(30*86400*1000))<date){ %>
+           <span style='color:red;font-weight:600'>Due</span><a href='/manager/rent_paid/<%= shop._id %>' style='margin:10px'><button style='color:blue;font-weight:400;' >has paid</button></a>
+       <% }else{ %>
+       
+         <span style='color:lime;font-weight:600;font-size:18px'>Paid</span>
+
+       <% } %>
+           </td>
+           </tr>
+          <%  }}) %>
+          </tbody>
+          </table>
+            </div>
+            </div>
+       
+    
+    <!----      shop_div        ----------->
+      <!---       specific_shop_div        ------>  
+      <div class="row" id="specific_shop_div" style='display:none'>
+      <div class="col-md-12">
+      <h3><i class="fas fa-stroopwafel"></i><span id='specific_shop_name'></span></h3>
+      <h5>Rent Status : <span id='specific_shop_rent_status'></span><span style='float:right'>Last Paid:<span id='specific_last_paid' style='font-size:14px;font-weight:600'></span></span></h5>
+      <hr>
+      <!-- Nav pills -->
+  <ul class="nav nav-pills" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" data-toggle="pill" href="#s_s_employee_list">Employee List</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="pill" href="#s_s_bills">Utility Bills</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="pill" href="#s_s_docs">Docs</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="pill" href="#s_s_security">Security Form</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" data-toggle="pill" href="#s_s_notice">Send Notice</a>
+  </li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+  <div id="s_s_employee_list" class="container tab-pane active" ><br>
+    <h3>Employee List</h3>
+    <div id='specific_shop_employee_list' style='overflow:scroll;max-height:100vh'></div>  </div>
+    
+  
+  
+    <div id="s_s_bills" class="container tab-pane fade"><br>
+    <h3>Utility Bills</h3>
+    <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Search By Title,Shop Name</span>
+    </div>
+    <input type="text" class="form-control" placeholder="Title,Shop Name?" id='s_s_bill_q' onkeyup="s_s_search_bill()">
+  </div>
+  
+    <table class="table table-dark table-hover" >
+    <thead >
+      <tr>
+        <th>Title</th>
+        <th>Upload Date</th>
+        <th>Download</th>
+
+      </tr>
+    </thead>
+    <tbody id='s_s_bill_table'>
+     
+    </tbody>
+  </table>
+      </div>
+  <div id="s_s_docs" class="container tab-pane fade"><br>
+    <h3>Docs</h3>
+    <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Search By Title,Shop Name</span>
+    </div>
+    <input type="text" class="form-control" placeholder="Title,Shop Name?" id='s_s_doc_q' onkeyup="s_s_search_doc()">
+  </div>
+  
+    <table class="table table-dark table-hover" >
+    <thead >
+      <tr>
+        <th>Title</th>
+        <th>Upload Date</th>
+        <th>Download</th>
+
+      </tr>
+    </thead>
+    <tbody id='s_s_doc_table'>
+     
+    </tbody>
+  </table>  </div>
+  <div id="s_s_security" class="container tab-pane fade" ><br>
+    <h3>Security Form</h3>
+    <div class='container-fluid' id='s_s_securities'>
+    
+    
+    </div>  </div>
+    <div id="s_s_notice" class="container tab-pane fade" ><br>
+    <h3>Send Notice</h3>
+    <div  class='container-fluid'>
+    <form action='/send_notice' method='POST'>
+    <div class="form-group ">
+   <label for="name">Title:</label>
+   <input type="text" class="form-control"  placeholder="Enter Title" name="title">
+   <input type='hidden' id='input_shop_id' name="shop_id" >
+ </div>
+ <div class="form-group ">
+   <label for="name">Detail:</label>
+   <textarea type="text" class="form-control"  placeholder="Detailed Notice" name="detail">
+   </textarea>
+ </div>
+ <br>
+ <button class='btn btn-primary'>Send</button>
+ 
+    
+    </form>
+    </div>  </div>  
+</div>
+<!--- tab panes --->
+      
+       
+       </div>
+      </div>
+ 
+
+<!----      specific_shop_div        ----------->
+      <!----      security_forms_div        ----------->
+
+      <div class="row" id="security_forms_div" style="display:none">
+      <div class="col-md-12">
+      <h3><i class="fas fa-wrench"></i> Security Forms</h3>
+      <hr>
+      <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Search By Name,Cnic,Address</span>
+      </div>
+      <input type="text" class="form-control" placeholder="Shop Name,CNIC,Address?" id='security_form_q' onkeyup="search_security_form()">
+    </div>
+    
+      <table class="table table-dark table-hover" >
+      <thead >
+        <tr>
+          <th>Shop ID</th>
+          <th>Name</th>
+          <th>Cnic</th>
+          <th>Address</th>
+  
+        </tr>
+      </thead>
+      <tbody id='security_form_table'>
+     
+       
+       
+      </tbody>
+    </table>   </div>
+      </div>
+              <!----      security_form_div        ----------->
+       
+       <!---       add_shop_div        ------>  
+       <div class="row" id="add_shop_div" style="display:none">
+       <div class="col-md-12">
+       <h3> 
+       <i class="fas fa-stroopwafel"></i> Add Shop            
+       </h3>
+       <hr>
+       <div class="col-md-6">
+       <div class="alert alert-success alert-dismissible  fade show" style="display:none" id="alert_add_shop">
+       <button type="button" class="close" data-dismiss="alert">&times;</button>
+       <strong>Success!</strong> Shop is registred in database. Admin will approve it
+     </div>
+       <div class="form-group ">
+         <input type="text" class="form-control"  placeholder="Shop Number" id="number">
+       </div>
+       <div class="form-group">
+         <input type="text" class="form-control"  placeholder="Shop Name" id="name">
+       </div>
+       <div class="form-group">
+         <input type="text" class="form-control"  placeholder="Shop Type" id="type">
+       </div>
+       <div class="form-group">
+         <input type="text" class="form-control"  placeholder="Shop Owner Name" id="owner_name" onChange="check_pwd()">
+       </div>
+       <div class="form-group">
+         <input type="text" class="form-control"  placeholder="A Valid Email" id="email" >
+       </div>
+       <div class="form-group">
+         <input type="text" class="form-control"  placeholder="Shop Phone Number" id="phone" >
+       </div>
+       
+       <br>
+      
+       <button   class="btn btn-primary" onClick="add_shop()">Register</button>
+     </div>
+     <br>
+     <hr>
+     <h3>Shops Waiting For Approval From Admin</h3>
+     <table class="table table-dark table-hover">
+            <thead><tr><th>Shop Name</th><th>Shop Owner</th><th>Shop Email</th><th>Phone Number</th><th>Delete</th></tr></thead>
+            <tbody id='shop_table'>
+            <% shops.forEach((shop)=>{ if( parseInt(shop.approved_flag)===0){ %>
+           <tr> <th><%= shop.name %></th><td><%= shop.owner_name %></td><td><%= shop.email %></td><td><%= shop.phone %></td>
+           <td> <button id='<%= shop._id %>'  class="btn btn-danger" onClick="delete_shop(this)">Delete</button>
+           </td>
+           </tr>
+          <%  }}) %>
+          </tbody>
+          </table>
+       </div>
+   </div>
+  
+  <!----      add_shop_div        ----------->
+    <!---       notifications_div        ------>  
+    <div class="row" id="notifications_div" style="display:none">
+    <div class="col-md-12">
+    <h3> <i class="fa fa-users fa-lg"></i> Notification
+    </h3>
+    <hr>
+    <% notifications.forEach((notification)=>{ if(notification.flag==="unread"){ %>
+    <div class="alert alert-success alert-dismissible" id='<%= notification._id %>'>
+    <button type="button" class="close" data-dismiss="alert" onClick='read(this.parentNode.id)'>&times;</button>
+    <strong><%= notification.title %></strong> <span><% let date=  new Date(parseInt(notification.date)); %> <%= date %></span>
+    <p><%= notification.detail %></p>
+  </div>
+   <% }}) %>
+   <hr>
+    <h4>OLD NOTIFICATIONS</h4>
+    <% notifications.forEach((notification)=>{ if(notification.flag!=="unread"){ %>
+    <div class="alert alert-secondary alert-dismissible" id='<%= notification._id %>'>
+    <strong><%= notification.title %></strong> <span><% let date=  new Date(parseInt(notification.date)); %> <%= date %></span>
+    <p><%= notification.detail %></p>
+  </div>
+   <% }}) %>
+    </div>
+    </div>
+    
+        <!---       notifications_div        ------>  
+
+     <!---       settings_div        ------>  
+     <div class="row" id="settings_div" style="display:none">
+     <div class="col-md-12">
+     <h3> <i class="fas fa-cog"></i> Settings
+     </h3>
+     <hr>
+     <div >
+     <div class="form-group ">
+       <label for="email">Old Password:</label>
+       <input type="password" class="form-control"  placeholder="Enter Old Password" id="old_pwd">
+     </div>
+     <div class="form-group">
+       <label for="pwd">New Password:</label>
+       <input type="password" class="form-control"  placeholder="Enter New password" id="pwd">
+     </div>
+     <div class="form-group">
+       <label for="pwd">Confirm Password:</label>
+       <input type="password" class="form-control"  placeholder="Confirm password" id="pwd_2" onChange="check_pwd()">
+     </div>
+     
+     <br><br>
+    
+     <button disabled id='pwd_btn' class="btn btn-primary" onClick="pwd_change()">Change Password</button>
+   </div>
+     </div>
+ </div>
+
+<!----      settings_div        ----------->
+        <!----      utility_div        ----------->
+
+    <div class="row" id="utility_div" style="display:none">
+    <div class="col-md-12">
+    <h3><i class="fas fa-wrench"></i> Utilities</h3>
+    <hr>
+    <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Search By Title,Shop Name</span>
+    </div>
+    <input type="text" class="form-control" placeholder="Title,Shop Name?" id='bill_q' onkeyup="search_bill()">
+  </div>
+  
+    <table class="table table-dark table-hover" >
+    <thead >
+      <tr>
+        <th>Title</th>
+        <th>Upload Date</th>
+        <th>Shop Name</th>
+        <th>Download</th>
+
+      </tr>
+    </thead>
+    <tbody id='bill_table'>
+     
+    </tbody>
+  </table>   </div>
+    </div>
+            <!----      utility_div        ----------->
+             <!----      rental_div        ----------->
+
+    <div class="row" id="rental_docs_div" style="display:none">
+    <div class="col-md-12">
+    <h3> <i class="fas fa-file"></i> Rental Documents
+    </h3>
+    <hr>
+    <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text">Search By Title,Shop Name</span>
+    </div>
+    <input type="text" class="form-control" placeholder="Title,Shop Name?" id='doc_q' onkeyup="search_doc()">
+  </div>
+  
+    <table class="table table-dark table-hover" >
+    <thead >
+      <tr>
+        <th>Title</th>
+        <th>Upload Date</th>
+        <th>Shop Name</th>
+        <th>Download</th>
+
+      </tr>
+    </thead>
+    <tbody id='doc_table'>
+   
+     
+     
+    </tbody>
+  </table>   </div>
+    </div>
+            <!----      rental_doc_div        ----------->
+            <!---       employees_div        ------>  
+ <div class="row" id="employees_div" style='display:none' >
+ <div class="col-md-12">
+ <h3>  <i class="fas fa-users"></i> Employees
+ </h3>
+
+ <hr>
+ <% employees.forEach((employee)=>{ %>
+ <div class="container-fluid">
+ <div class="container addemployee-body">
+     <div class="container ">
+         <div class="row card-info-section">
+             <div class="col-sm-8">
+                 <div class="row person-data">
+                     <div class="col-4">
+                         <p>ID</p>
+                     </div>
+                     <div class="col-8">
+
+                     </div>
+                 </div>
+
+                 <div class="row person-data">
+                     <div class="col-4">
+                         <p>Name</p>
+                     </div>
+                     <div class="col-8">
+                     <%= employee.name %>
+
+                     </div>
+                 </div>
+
+                 <div class="row person-data">
+                     <div class="col-4">
+                         <p>Father Name</p>
+                     </div>
+                     <div class="col-8">
+                     <%= employee.father_name %>
+
+                     </div>
+                 </div>
+
+                 <div class="row person-data">
+                     <div class="col-4">
+                         <p>Cnic No.</p>
+                     </div>
+                     <div class="col-8">
+                     <%= employee.cnic %>
+                     </div>
+                 </div>
+             </div>
+
+             <div class="col-sm-4 photo">
+                     <img src="<%= employee.pic %>" alt="" class="rounded image-wrapper">
+             </div>
+         </div>
+     </div>
+ </div>
+</div>
+<% }) %>
+  </div>
+</div>
+
+<!----      employees_div        -----------> 
+ <!---       add_employees_div        ------>  
+ <div class="row" id="add_employees_div" style="display:none">
+ <div class="col-md-12">
+ <h3>  <i class="fas fa-user-tie"></i> Add Employees
+ </h3>
+ <hr>
+ <form action="/manager/add_employee" method="POST" enctype="multipart/form-data">
+
+ <div class="form-group ">
+   <label for="name">Name:</label>
+   <input type="text" class="form-control"  placeholder="Enter Full Name" name="name">
+ </div>
+ <div class="form-group ">
+   <label for="name">father Name:</label>
+   <input type="text" class="form-control"  placeholder="Enter Father Name" name="father_name">
+ </div>
+ <div class="form-group ">
+   <label for="name">Employement Role:</label>
+   <input type="text" class="form-control"  placeholder="Enter Role in Falcon Mart" name="role">
+ </div>
+ <div class="form-group ">
+   <label for="name">Address:</label>
+   <input type="text" class="form-control"  placeholder="Enter Address" name="address">
+ </div>
+ <div class="form-group ">
+   <label for="name">Phone Number:</label>
+   <input type="text" class="form-control"  placeholder="Enter Phone number" name="phone">
+ </div>
+ <div class="form-group ">
+   <label for="name">CNIC:</label>
+   <input type="text" class="form-control"  placeholder="Enter CNIC number" name="cnic">
+ </div>
+ <div class="form-group">
+   <label for="file">Picture:</label>
+   <input type="file" class="form-control-file" name="pic">
+ </div>
+ 
+ 
+ <br>
+
+ <button  class="btn btn-primary" >Add</button>
+</form> </div>
+</div>
+
+<!----      add_employees_div        -----------> 
+
+            
+
+    <div>
+</body>
+<script>
+
+function get_shop(e){
+let id=e;
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+  if (this.readyState == 4 && this.status == 200) {
+      let success = JSON.parse(this.responseText).success;
+      if(success===true){
+        navigate('specific_shop_div');
+
+       // alert(this.responseText);
+       //  console.log(this.responseText);
+          var shop = JSON.parse(this.responseText).shop;
+          var employee_list = JSON.parse(shop.employee_list);
+          document.getElementById('specific_shop_name').innerHTML = shop.name;
+          document.getElementById('input_shop_id').value = shop._id;
+          let last_date= new Date(parseInt(shop.last_paid));
+          
+          
+
+          let date= new Date().getTime();
+          if((shop.last_paid+(30*86400*1000))<date){
+              document.getElementById('specific_shop_rent_status').innerHTML = "Due"
+              document.getElementById('specific_shop_rent_status').setAttribute('style','color:red');
+          }
+          else{
+            document.getElementById('specific_shop_rent_status').innerHTML = "Paid"
+            document.getElementById('specific_shop_rent_status').setAttribute('style','color:green');
+
+
+          }
+          if(employee_list<1){
+              document.getElementById("specific_shop_employee_list").innerHTML = `<p>nohing to show</p>`
+          }
+          else{
+              let str = ``;
+              employee_list.forEach((employee)=>{
+                  str += `<div class="container-fluid">
+                  <div class="container addemployee-body">
+                      <div class="container ">
+                          <div class="row card-info-section">
+                              <div class="col-sm-8">
+                                  <div class="row person-data">
+                                      <div class="col-4">
+                                          <p>ID</p>
+                                      </div>
+                                      <div class="col-8">
+                                         <p></p>
+                                      </div>
+                                  </div>
+      
+                                  <div class="row person-data">
+                                      <div class="col-4">
+                                          <p>Name</p>
+                                      </div>
+                                      <div class="col-8">
+                                          <p>`+employee.name+`</p>
+                                      </div>
+                                  </div>
+      
+                                  <div class="row person-data">
+                                      <div class="col-4">
+                                          <p>Father Name</p>
+                                      </div>
+                                      <div class="col-8">
+                                      <p>`+employee.father_name+`</p>
+                                      </div>
+                                  </div>
+      
+                                  <div class="row person-data">
+                                      <div class="col-4">
+                                          <p>Cnic No.</p>
+                                      </div>
+                                      <div class="col-8">
+                                      <p>`+employee.cnic+`</p>
+
+                                      </div>
+                                  </div>
+                              </div>
+      
+                              <div class="col-sm-4 photo">
+                                      <img src="`+employee.pic+`" alt="" class="rounded image-wrapper">
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>`
+              });
+              document.getElementById('specific_shop_employee_list').innerHTML = str;
+             
+          }
+           ///////////////////////  bills
+           let table = document.getElementById('s_s_bill_table');
+           str = '';    
+         let bills = JSON.parse(this.responseText).bills;
+      
+            bills.forEach((bill)=>{
+                str += ` <tr>
+                <td>` +bill.title+` </td>
+                <td>` +new Date(parseInt(bill.date))+`</td>
+                <td><a href="` +bill.path+`" download><button type="button" class="btn btn-info">Download</button></a></td>
+              </tr>`
+            });
+         
+        
+           table.innerHTML = str;
+          ////////   bills
+          /////// docs
+           table = document.getElementById('s_s_doc_table');
+          str = '';    
+        let docs = JSON.parse(this.responseText).docs;
+     
+           docs.forEach((doc)=>{
+               str += ` <tr>
+               <td>` +doc.title+` </td>
+               <td>` +new Date(parseInt(doc.date))+`</td>
+               <td><a href="` +doc.path+`" download><button type="button" class="btn btn-info">Download</button></a></td>
+             </tr>`
+           });
+        
+       
+          table.innerHTML = str;
+          /////// docs
+          //security
+          let securities = JSON.parse(this.responseText).securities;
+          str='';
+         let div= document.getElementById('s_s_securities');
+          for(let i= securities.length-1 ; i>=0 ; i--){
+            str += `<div class='container'>
+            <div class='row'>
+            <div class='col-md-6 col-sm-3'>Name</div>
+            <div class='col-md-6 col-sm-9'>`+securities[i].name+`</div>
+            </div>
+            <div class='row'>
+            <div class='col-md-6 col-sm-3'>cnic</div>
+            <div class='col-md-6 col-sm-9'>`+securities[i].cnic+`</div>
+            </div>
+            <div class='row'>
+            <div class='col-md-6 col-sm-3'>Address</div>
+            <div class='col-md-6 col-sm-9'>`+securities[i].address+`</div>
+            </div>
+            </div>
+            <hr>`
+
+          }
+          div.innerHTML = str;
+         
+
+          ///security
+          document.getElementById('specific_last_paid').innerHTML = last_date;
+
+
+      }
+  }
+};
+xhttp.open("GET", "/shop/get/"+id, true);
+//xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhttp.send();
+
+
+}
+function check_pwd(){
+    if(document.getElementById("pwd").value!==document.getElementById("pwd_2").value){
+        alert('password does not match');
+        document.getElementById('pwd_btn').disabled = true;
+    }
+    else{
+       document.getElementById('pwd_btn').disabled = false;
+
+    }
+}
+function load_security_forms(){
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+       let div = document.getElementById('security_form_table');
+       let str = '';    
+      let docs = JSON.parse(this.responseText).security_forms;
+        docs.forEach((doc)=>{
+            str += ` <tr>
+            <td>` +doc.shop_id+` </td>
+            <td>` +doc.name+`</td>
+            <td>` +doc.cnic+` </td>
+            <td>` +doc.address+` </td>
+          </tr>`
+        });
+        div.innerHTML = str;
+      }
+    };
+    xhttp.open("GET", "/security_forms", true);
+    xhttp.send();
+}
+load_security_forms();
+function search_security_form(){
+    var input, filter, found, table, tr, td, i, j;
+    input = document.getElementById("security_form_q");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("security_form_table");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                found = true;
+            }
+        }
+        if (found) {
+            tr[i].style.display = "";
+            found = false;
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
+}
+function add_shop(){
+    let number = document.getElementById("number").value;
+    let name = document.getElementById("name").value;
+    let type = document.getElementById("type").value;
+    let owner_name = document.getElementById("owner_name").value;
+    let email = document.getElementById("email").value;
+    let phone = document.getElementById("phone").value;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+          let success = JSON.parse(this.responseText).success;
+          if(success===true){
+              document.getElementById('alert_add_shop').style.display = "block";
+              document.getElementById("number").value='';
+              document.getElementById("name").value='';
+              document.getElementById("type").value='';
+              document.getElementById("owner_name").value='';
+              document.getElementById("email").value='';
+              document.getElementById("phone").value='';
+
+
+          }
+      }
+    };
+    xhttp.open("POST", "/manager/add_shop", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("number="+number+"&name="+name+"&type="+type+"&owner_name="+owner_name+"&email="+email+"&phone="+phone);
+
+}
+function pwd_change(){
+    let pwd_old= document.getElementById("old_pwd").value;
+    let pwd_new= document.getElementById("pwd").value;
+
+   var xhttp = new XMLHttpRequest();
+   xhttp.onreadystatechange = function() {
+     if (this.readyState == 4 && this.status == 200) {
+         let success = JSON.parse(this.responseText).success;
+        alert(success);
+     }
+   };
+   xhttp.open("POST", "/admin/settings", true);
+   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+   xhttp.send("pwd_old="+pwd_old+"&pwd_new="+pwd_new);
+ 
+}
+function search_shop(){
+    var input, filter, found, table, tr, td, i, j;
+    input = document.getElementById("shop_q");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("shop_table");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                found = true;
+            }
+        }
+        if (found) {
+            tr[i].style.display = "";
+            found = false;
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
+}
+  function search_bill(){
+    var input, filter, found, table, tr, td, i, j;
+    input = document.getElementById("bill_q");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("bill_table");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                found = true;
+            }
+        }
+        if (found) {
+            tr[i].style.display = "";
+            found = false;
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
+}
+function delete_shop(e){
+let row = e.parentNode.parentNode;
+let id = e.id;
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+  if (this.readyState == 4 && this.status == 200) {
+      let success = JSON.parse(this.responseText).success;
+      if(success){
+        row.style.display = "none";
+      }
+  } 
+};
+xhttp.open("POST", "/shop/delete", true);
+xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+xhttp.send("id="+id);
+}
+function s_s_search_bill(){
+    var input, filter, found, table, tr, td, i, j;
+    input = document.getElementById("s_s_bill_q");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("s_s_bill_table");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                found = true;
+            }
+        }
+        if (found) {
+            tr[i].style.display = "";
+            found = false;
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
+}
+function s_s_search_doc(){
+    var input, filter, found, table, tr, td, i, j;
+    input = document.getElementById("s_s_doc_q");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("s_s_doc_table");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                found = true;
+            }
+        }
+        if (found) {
+            tr[i].style.display = "";
+            found = false;
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
+}
+function search_doc(){
+    var input, filter, found, table, tr, td, i, j;
+    input = document.getElementById("doc_q");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("doc_table");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                found = true;
+            }
+        }
+        if (found) {
+            tr[i].style.display = "";
+            found = false;
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
+}
+function navigate(loc){
+    
+    document.getElementById("security_forms_div").style.display="none";
+    document.getElementById("specific_shop_div").style.display="none";
+   document.getElementById("shop_div").style.display="none";
+   document.getElementById("settings_div").style.display="none";
+   document.getElementById("utility_div").style.display="none";
+   document.getElementById("rental_docs_div").style.display="none";
+   document.getElementById("add_shop_div").style.display="none";
+   document.getElementById("employees_div").style.display="none";
+   document.getElementById("add_employees_div").style.display="none";
+   document.getElementById("notifications_div").style.display="none";
+
+   document.getElementById(loc).style.display="block"
+
+}
+function read(id){
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+          let success = JSON.parse(this.responseText).success;
+         //alert(success);
+      }
+    };
+    xhttp.open("GET", "/notifications/read/"+id, true);
+    xhttp.send(); 
+}
+function load_bills(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+       let table = document.getElementById('bill_table');
+       let str = '';    
+      let bills = JSON.parse(this.responseText).bills;
+      bills.forEach((bill)=>{
+            str += ` <tr>
+            <td>` +bill.title+` </td>
+            <td>` +new Date(parseInt(bill.date))+`</td>
+            <td>` +bill.shop_id+` </td>
+            <td><a href="` +bill.path+`" download><button type="button" class="btn btn-info">Download</button></a></td>
+          </tr>`
+        });
+        table.innerHTML = str;
+      }
+    };
+    xhttp.open("GET", "/bills", true);
+    xhttp.send();
+}
+load_bills();
+function load_docs(){
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+       let table = document.getElementById('doc_table');
+       let str = '';    
+      let docs = JSON.parse(this.responseText).docs;
+        docs.forEach((doc)=>{
+            str += ` <tr>
+            <td>` +doc.title+` </td>
+            <td>` +new Date(parseInt(doc.date))+`</td>
+            <td>` +doc.shop_id+` </td>
+            <td><a href="` +doc.path+`" download><button type="button" class="btn btn-info">Download</button></a></td>
+          </tr>`
+        });
+        table.innerHTML = str;
+      }
+    };
+    xhttp.open("GET", "/docs", true);
+    xhttp.send();
+}
+load_docs();
+
+</script>
+    <!-- <script src="js/bootstrap.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/popper.min.js"></script> -->
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</html>

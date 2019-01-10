@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <!-- bootstrap cdn -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+<!--===============================================================================================-->	
+<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
+    </head>
+
+<body>
+    <div class="container-fluid home-body" id="div_1">
+
+        <div class="container text-center page-header">
+            <h1>Shopping Mart</h1>
+        </div>
+
+        <!-- <div class="home-img">
+            <img class="img-fluid" src="assets/head.png" alt="">
+        </div> -->
+    
+    <section class="container-fluid home-sub">
+        <div class="container">
+            <div class="row home-section">
+                <div class="col-md-3 text-center section" onclick="show('div_3')">
+                    <div>
+                        <i class="far fa-building icon"></i>
+                    </div>
+                    <div class="home-sec-text">
+                        <h2>Microchip</h2>
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-center section" onclick="show('div_4')">
+                        <div>
+                                <i class="fas fa-address-book icon"></i>
+                        </div>
+                        <div class="home-sec-text">
+                            <h2>Falcon Mart</h2>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 text-center section" onclick="show('div_2')">
+                            <div>
+                                    <i class="fas fa-users-cog icon"></i>
+                            </div>
+                            <div class="home-sec-text">
+                                <h2>Falcon Unit</h2>
+                            </div>
+                        </div>
+            </div>
+        </div>
+    </section>
+</div>
+    <center>
+        <!-- <div id="div_1">
+            <h2>Who are you?</h2>
+            <h3 onclick="show('div_2')">Shop Owner</h3>
+            <h3 onclick="show('div_3')">Admin</h3>
+            <h3 onclick="show('div_4')">Manager</h3>
+
+        </div> -->
+        <div class="container-fluid" id="div_2" style="display:none;background:#d19b3d;height:100vh;padding-top:30px">
+        <div class="container" style=''>
+        <div class='jumbotron bg-dark'>        <h2 style='color:white'>Shop Login</h2>        </div>
+           <div class='container'>
+           <form action="/shop/login" method="POST">
+
+          <div class="form-group">
+            <label for="user">Username:</label>
+            <input type="text" class="form-control"  placeholder="Enter Username" name="username">
+          </div>
+          <div class="form-group">
+            <label for="pwd">Password:</label>
+            <input type="password" class="form-control"  placeholder="Enter password" name="password">
+          </div>
+          
+          <button type="submit" class="btn btn-primary">Submit</button>
+          </form></div>
+          
+
+          </div>
+      </div>
+            
+        
+        <div class="container-fluid" id="div_3" style="display:none;background:#d19b3d;height:100vh;padding-top:30px">
+        <div class="container" style=''>
+        <div class='jumbotron bg-dark'>        <h2 style='color:white'>Admin Login</h2>        </div>
+           <div class='container'>
+           <form action="/admin/login" method="POST">
+
+          <div class="form-group">
+            <label for="user">Username:</label>
+            <input type="text" class="form-control"  placeholder="Enter Username" name="username">
+          </div>
+          <div class="form-group">
+            <label for="pwd">Password:</label>
+            <input type="password" class="form-control"  placeholder="Enter password" name="password">
+          </div>
+          
+          <button type="submit" class="btn btn-primary">Submit</button>
+          </form></div>
+          
+
+          </div>
+      </div>
+            
+        
+
+      <div class="container-fluid" id="div_4" style="display:none;background:#d19b3d;height:100vh;padding-top:30px">
+      <div class="container" style=''>
+      <div class='jumbotron bg-dark'>        <h2 style='color:white'>Manager Login</h2>        </div>
+         <div class='container'>
+         <form action="/manager/login" method="POST">
+
+        <div class="form-group">
+          <label for="user">Username:</label>
+          <input type="text" class="form-control"  placeholder="Enter Username" name="username">
+        </div>
+        <div class="form-group">
+          <label for="pwd">Password:</label>
+          <input type="password" class="form-control"  placeholder="Enter password" name="password">
+        </div>
+        
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+        </form></div>
+        
+
+        </div>
+    </div>
+          
+    
+
+
+    </center>
+
+
+
+</body>
+<script>
+    function show(div) {
+        document.getElementById(div).style.display = "block";
+        document.getElementById('div_1').style.display = "none";
+
+    }
+</script>
+<!-- jquery cdn -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+<!-- popper cdn -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+<!-- bootstrap cdn -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+</html>
